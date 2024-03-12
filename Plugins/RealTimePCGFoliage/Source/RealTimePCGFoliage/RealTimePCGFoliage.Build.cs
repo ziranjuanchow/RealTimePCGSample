@@ -49,6 +49,7 @@ public class RealTimePCGFoliage : ModuleRules
 				"RHI",
 				"Renderer",
 				"RenderCore",
+				"EditorFramework",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

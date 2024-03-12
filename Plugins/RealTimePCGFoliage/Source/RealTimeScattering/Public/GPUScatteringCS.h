@@ -2,6 +2,7 @@
 #include "EngineModule.h"
 #include "GlobalShader.h"
 #include "ShaderParameterStruct.h"
+#include "DataDrivenShaderPlatformInfo.h"
 
 #define LOCTEXT_NAMESPACE "GraphicToolsPlugin"
 
@@ -27,8 +28,8 @@ public:
 	/// </summary>
 	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
 		SHADER_PARAMETER_UAV(RWStructuredBuffer<uint>, InstanceCountBuffer)
-		SHADER_PARAMETER_ARRAY(FVector2D, InputPattern, [64])
-		SHADER_PARAMETER(FVector2D, PatternSize)
+		SHADER_PARAMETER_SCALAR_ARRAY(float, InputPattern, [128])
+		SHADER_PARAMETER(FVector2f, PatternSize)
 		SHADER_PARAMETER(uint32, PatternPointNum)
 		SHADER_PARAMETER_TEXTURE(Texture2D, InputTexture)
 		SHADER_PARAMETER_TEXTURE(Texture2D, DepthTexture)
@@ -38,8 +39,8 @@ public:
 		SHADER_PARAMETER_SAMPLER(SamplerState, LinearSampler)
 		SHADER_PARAMETER(float,BasicHeight)
 		SHADER_PARAMETER(FIntPoint,CenterOffset)
-		SHADER_PARAMETER(FVector4, TotalRect)
-		SHADER_PARAMETER(FVector4, ClipRect)
+		SHADER_PARAMETER(FVector4f, TotalRect)
+		SHADER_PARAMETER(FVector4f, ClipRect)
 		SHADER_PARAMETER(float, Ratio)
 		SHADER_PARAMETER(float, MaxRandomScale)
 		SHADER_PARAMETER(float, MinRandomScale)

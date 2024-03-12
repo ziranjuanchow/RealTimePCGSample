@@ -32,7 +32,7 @@ void SPCGFoliageEdit::CustomizeToolBarPalette(FToolBarBuilder& ToolBarBuilder)
 	TSharedPtr<INumericTypeInterface<float>> NumericInterface = MakeShareable(new FVariablePrecisionNumericInterface());
 
 	TSharedRef<SWidget> RadiusControl = SNew(SSpinBox<float>)
-		.Style(&FEditorStyle::Get().GetWidgetStyle<FSpinBoxStyle>("LandscapeEditor.SpinBox"))
+		.Style(&FAppStyle::Get().GetWidgetStyle<FSpinBoxStyle>("LandscapeEditor.SpinBox"))
 		.PreventThrottling(true)
 		.MinValue(UIMin)
 		.MaxValue(UIMax)
@@ -47,7 +47,7 @@ void SPCGFoliageEdit::CustomizeToolBarPalette(FToolBarBuilder& ToolBarBuilder)
 	ToolBarBuilder.AddToolBarWidget(RadiusControl, LOCTEXT("BrushRadius", "Radius"));
 
 	TSharedRef<SWidget> FallOffControl = SNew(SSpinBox<float>)
-		.Style(&FEditorStyle::Get().GetWidgetStyle<FSpinBoxStyle>("LandscapeEditor.SpinBox"))
+		.Style(&FAppStyle::Get().GetWidgetStyle<FSpinBoxStyle>("LandscapeEditor.SpinBox"))
 		.PreventThrottling(true)
 		.MinValue(0.0001)
 		.MaxValue(1)
@@ -66,7 +66,7 @@ void SPCGFoliageEdit::CustomizeToolBarPalette(FToolBarBuilder& ToolBarBuilder)
 		NAME_None,
 		LOCTEXT("FoliageSelectAll", "All"),
 		LOCTEXT("FoliageSelectAllTooltip", "Select All Foliage"),
-		FSlateIcon(FEditorStyle::GetStyleSetName(), "FoliageEditMode.SelectAll")
+		FSlateIcon(FAppStyle::GetAppStyleSetName(), "FoliageEditMode.SelectAll")
 	);
 
 }

@@ -66,7 +66,7 @@ void APCGFoliageManager::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 	
 }
 
-bool APCGFoliageManager::GenerateProceduralContent(bool bPartialUpdate, FVector2D EditedCenter, float EditedRadius)
+bool APCGFoliageManager::GenerateProceduralContent(bool bPartialUpdate, FVector2f EditedCenter, float EditedRadius)
 {
 #if WITH_EDITOR
 	double start,end;
@@ -75,10 +75,10 @@ bool APCGFoliageManager::GenerateProceduralContent(bool bPartialUpdate, FVector2
 		CaptureLandscape();
 	end = FPlatformTime::Seconds();
 	UE_LOG(LogTemp, Warning, TEXT("CaptureLandscape executed in %f seconds."), end - start);
-	FVector4 EditedRect;
+	FVector4f EditedRect;
 	if (!bPartialUpdate)
 	{
-		EditedCenter = FVector2D(0, 0);
+		EditedCenter = FVector2f(0, 0);
 		EditedRadius = GetLandscapeSize().X/2*100;
 	}
 
@@ -131,13 +131,12 @@ void APCGFoliageManager::ConvertToFoliageInstance(UBiome* InBiome,const TArray<F
 			StartRay.Z += HalfHeight;
 			FVector EndRay = StartRay;
 			EndRay.Z -= (HalfHeight * 2.f + 10.f);	//add 10cm to bottom position of raycast. This is needed because volume is usually placed directly on geometry and then you get precision issues
-
-			FDesiredFoliageInstance DesiredInst(StartRay, EndRay, CurrentSpecies->MaxRadius);
+			int RandomFoliageType = Instance.RandomID%CurrentSpecies->FoliageTypes.Num();
+			const UFoliageType* FoliageType = CurrentSpecies->FoliageTypes[RandomFoliageType];
+			FDesiredFoliageInstance DesiredInst(StartRay, EndRay, FoliageType , CurrentSpecies->MaxRadius);
 			DesiredInst.Rotation = FQuat::Identity;
 			DesiredInst.ProceduralGuid = ProceduralGuid;
-			int RandomFoliageType = Instance.RandomID%CurrentSpecies->FoliageTypes.Num();
-
-			DesiredInst.FoliageType = CurrentSpecies->FoliageTypes[RandomFoliageType];
+			DesiredInst.FoliageType = FoliageType;
 			DesiredInst.Age = 0;
 			DesiredInst.TraceRadius = 100;
 			DesiredInst.ProceduralVolumeBodyInstance = nullptr;
@@ -147,7 +146,7 @@ void APCGFoliageManager::ConvertToFoliageInstance(UBiome* InBiome,const TArray<F
 			FFoliageInstance* FinalInstance = new(OutInstances[FirstIndex+RandomFoliageType])FFoliageInstance;			
 			PotentialInst.PlaceInstance(GetWorld(), DesiredInst.FoliageType, *FinalInstance,true);
 			FinalInstance->ProceduralGuid = ProceduralGuid;
-			FinalInstance->DrawScale3D = FVector(Instance.Scale);
+			FinalInstance->DrawScale3D = FVector3f(Instance.Scale);
 		}
 	}
 }
@@ -156,14 +155,14 @@ void APCGFoliageManager::RemoveProceduralContent(bool InRebuildTree)
 {
 }
 
-void APCGFoliageManager::CleanPreviousFoliage(const TArray<UFoliageType*>& CleanFoliageTypes,FVector4 DirtyRect)
+void APCGFoliageManager::CleanPreviousFoliage(const TArray<UFoliageType*>& CleanFoliageTypes,FVector4f DirtyRect)
 {
 	double start, end;
 	start = FPlatformTime::Seconds();
 
 	for (const UFoliageType* FoliageType : CleanFoliageTypes)
 	{
-		FRealTimePCGFoliageEdMode::CleanProcedualFoliageInstance(GetWorld(),ProceduralGuid,FoliageType, DirtyRect);
+		FRealTimePCGFoliageEdMode::CleanProcedualFoliageInstance(GEditor->GetWorld(),ProceduralGuid,FoliageType, DirtyRect);
 	}
 	end = FPlatformTime::Seconds();
 	UE_LOG(LogTemp, Warning, TEXT("CleanPreviousFoliage executed in %f seconds."), end - start);
@@ -201,7 +200,7 @@ void APCGFoliageManager::CaptureLandscape()
 	LandscapeNormal = RealTimePCGUtils::GetOrCreateTransientRenderTarget2D(LandscapeNormal, "LandscapeNormal", RenderTargetSize, ETextureRenderTargetFormat::RTF_RGBA32f, FLinearColor::Black);	
 	
 	FVector Scale = Landscape->GetTransform().GetScale3D();
-	FVector2D Size = FVector2D(Scale.X, Scale.Y) * (GetLandscapeSize());
+	FVector2f Size = FVector2f(Scale.X, Scale.Y) * (GetLandscapeSize());
 	UMaterialInterface* LandscapeMaterialBackup = Landscape->LandscapeMaterial;
 	SceneCaptureComponent2D->OrthoWidth = FMath::Max(Size.X, Size.Y);
 	//Disable Landscape LOD
@@ -226,7 +225,7 @@ void APCGFoliageManager::CaptureLandscape()
 	SceneCaptureComponent2D->ShowOnlyActors.Empty();	
 	Modify();
 }
-void APCGFoliageManager::SingleBiomeGeneratePipeline(UBiome* InBiome, FBiomeData& InBiomeData, TArray<FPotentialInstance>& OutFoliageInstances,FVector4 DirtyRect)
+void APCGFoliageManager::SingleBiomeGeneratePipeline(UBiome* InBiome, FBiomeData& InBiomeData, TArray<FPotentialInstance>& OutFoliageInstances,FVector4f DirtyRect)
 {
 	double start, end;
 	start = FPlatformTime::Seconds();
@@ -271,7 +270,7 @@ void APCGFoliageManager::SingleBiomeGeneratePipeline(UBiome* InBiome, FBiomeData
 	end = FPlatformTime::Seconds();
 	UE_LOG(LogTemp, Warning, TEXT("In SingleBiomeGeneratePipeline Scatter ConvertToFoliageInstance in %f seconds."), end - start);
 }
-FRenderCommandFence APCGFoliageManager::ExcuteBiomeGeneratePipeline(TArray<TArray<FFoliageInstance>>& OutFoliageInstances, FVector2D EditedCenter, float EditedRadius)
+FRenderCommandFence APCGFoliageManager::ExcuteBiomeGeneratePipeline(TArray<TArray<FFoliageInstance>>& OutFoliageInstances, FVector2f EditedCenter, float EditedRadius)
 {
 	double start, end;
 	start = FPlatformTime::Seconds();
@@ -307,8 +306,8 @@ FRenderCommandFence APCGFoliageManager::ExcuteBiomeGeneratePipeline(TArray<TArra
 		{
 			ExtraRadius += CurrentSpecies->MaxRadius;
 		}
-		FVector4 DirtyRect;
-		DirtyRect = FVector4(EditedCenter - (ExtraRadius + EditedRadius), EditedCenter + (ExtraRadius + EditedRadius));
+		FVector4f DirtyRect;
+		DirtyRect = FVector4f(EditedCenter - (ExtraRadius + EditedRadius), EditedCenter + (ExtraRadius + EditedRadius));
 
 		FBiomePipelineContext& CurrentContext = BiomePipelineContext.Last();
 		CurrentContext.Pattern = UReaTimeScatterLibrary::GetDefaultPattern();
@@ -356,7 +355,7 @@ FRenderCommandFence APCGFoliageManager::ExcuteBiomeGeneratePipeline(TArray<TArra
 		}
 	}
 
-	CleanPreviousFoliage(FoliageTypes, FVector4(EditedCenter - (MaxExtraRadius + EditedRadius), EditedCenter + (MaxExtraRadius + EditedRadius)));
+	CleanPreviousFoliage(FoliageTypes, FVector4f(EditedCenter - (MaxExtraRadius + EditedRadius), EditedCenter + (MaxExtraRadius + EditedRadius)));
 
 	start = FPlatformTime::Seconds();
 	Fence.Wait();
@@ -397,11 +396,11 @@ FRenderCommandFence APCGFoliageManager::ExcuteBiomeGeneratePipeline(TArray<TArra
 	//UKismetRenderingLibrary::DrawMaterialToRenderTarget(this, DistanceFieldPreview, SDFMID);
 	return Fence;
 }
-FVector4 APCGFoliageManager::GetLandscapeBound()
+FVector4f APCGFoliageManager::GetLandscapeBound()
 {
 	FVector Scale = Landscape->GetTransform().GetScale3D();
-	FVector2D Size = FVector2D(Scale.X, Scale.Y)*GetLandscapeSize();
-	FVector4 TotalRect = FVector4(-Size.X, -Size.Y, Size.X, Size.Y) / 2;
+	FVector2f Size = FVector2f(Scale.X, Scale.Y)*GetLandscapeSize();
+	FVector4f TotalRect = FVector4f(-Size.X, -Size.Y, Size.X, Size.Y) / 2;
 	return TotalRect;
 }
 

@@ -15,11 +15,11 @@
 
 FSpeceiesModel::FSpeceiesModel(USpecies* InSpecies, UTexture2D* InCleanMap, UTextureRenderTarget2D* InDensityMap):Species(InSpecies), CleanMap(InCleanMap), DensityMap(InDensityMap)
 {
-	// TODO: SlateBrush¶ÔÎÆÀíµÄÇ¿ÒýÓÃµ¼ÖÂÄ³Ð©Çé¿öÏÂ»á·¢ÉúÄÚ´æÐ¹Â©£¬Ó¦ÊÖ¶¯¹ÜÀíSlateBrushµÄÉúÃüÖÜÆÚ
+	// TODO: SlateBrushï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½Ä³Ð©ï¿½ï¿½ï¿½ï¿½Â»á·¢ï¿½ï¿½ï¿½Ú´ï¿½Ð¹Â©ï¿½ï¿½Ó¦ï¿½Ö¶ï¿½ï¿½ï¿½ï¿½ï¿½SlateBrushï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if(InCleanMap !=nullptr)
-		CleanMapSlateBrush = FDeferredCleanupSlateBrush::CreateBrush(CleanMap.Get(),FVector2D(64,64));
+		CleanMapSlateBrush = FDeferredCleanupSlateBrush::CreateBrush(CleanMap.Get(),FVector2f(64,64));
 	if (InDensityMap != nullptr)
-		DensityMapSlateBrush = FDeferredCleanupSlateBrush::CreateBrush(DensityMap.Get(), FVector2D(64, 64));
+		DensityMapSlateBrush = FDeferredCleanupSlateBrush::CreateBrush(DensityMap.Get(), FVector2f(64, 64));
 }
 
 TSharedRef<SWidget> FSpeceiesModel::CreateWidget() const
@@ -38,7 +38,7 @@ TSharedRef<SWidget> FSpeceiesModel::CreateCleanMapPreview() const
 	const FSlateBrush* SlateBrushPtr;
 	SlateBrushPtr = FDeferredCleanupSlateBrush::TrySlateBrush(CleanMapSlateBrush);
 	if (!SlateBrushPtr)
-		SlateBrushPtr=FEditorStyle::GetDefaultBrush();
+		SlateBrushPtr=FAppStyle::GetDefaultBrush();
 
 	return SNew(SBox)
 		.WidthOverride(70)
@@ -88,7 +88,7 @@ public:
 public: // override SMultiColumnTableRow
 	virtual TSharedRef<SWidget> GenerateWidgetForColumn(const FName& ColumnName) override
 	{
-		if (ColumnName == TEXT("Name"))//ÅÐ¶ÏÁÐÃûÎªType£¬´ÎÃû³ÆÔÚ´´½¨ViewÊ±£¬Í¨¹ýSHeaderRow::ColumnÖ¸¶¨
+		if (ColumnName == TEXT("Name"))//ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ÎªTypeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ViewÊ±ï¿½ï¿½Í¨ï¿½ï¿½SHeaderRow::ColumnÖ¸ï¿½ï¿½
 		{
 			return Item->CreateWidget();
 		}
@@ -214,13 +214,13 @@ void SPCGFoliagePalette::Construct(const FArguments& InArgs)
 {
 	const FText BlankText = FText::GetEmpty();
 	EdMode = (FRealTimePCGFoliageEdMode*)GLevelEditorModeTools().GetActiveMode(FRealTimePCGFoliageEdMode::EM_RealTimePCGFoliageEdModeId);
-	BiomePreviewSlateBrush = FDeferredCleanupSlateBrush::CreateBrush(EdMode->BiomePreviewRenderTarget, FVector2D(256, 256));
+	BiomePreviewSlateBrush = FDeferredCleanupSlateBrush::CreateBrush(EdMode->BiomePreviewRenderTarget, FVector2f(256, 256));
 	ThumbnailPool = MakeShareable(new FAssetThumbnailPool(64));
 	ChildSlot
 	[
 		SNew(SSplitter)
 		.Orientation(Orient_Vertical)
-		.Style(FEditorStyle::Get(), "FoliageEditMode.Splitter")
+		.Style(FAppStyle::Get(), "FoliageEditMode.Splitter")
 		+ SSplitter::Slot()
 		[
 			SNew(SVerticalBox)

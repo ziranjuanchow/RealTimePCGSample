@@ -4,6 +4,8 @@
 #include "RealTimePCGFoliageEdMode.h"
 #include "RealTimePCGAssetTypeActions.h"
 #include "PCGFoliageEditorCommands.h"
+#include "EditorModeRegistry.h"
+
 #define LOCTEXT_NAMESPACE "FRealTimePCGFoliageModule"
 
 EAssetTypeCategories::Type FRealTimePCGFoliageModule::AssetCategory;

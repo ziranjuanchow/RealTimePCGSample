@@ -233,7 +233,7 @@ void FRealTimePCGFoliageEdMode::FoliageBrushTrace(FEditorViewportClient* Viewpor
 			static FName NAME_FoliageBrush = FName(TEXT("FoliageBrush"));
 			FFoliagePaintingGeometryFilter FilterFunc;
 
-			if (AInstancedFoliageActor::FoliageTrace(World, Hit, FDesiredFoliageInstance(TraceStart, TraceEnd), NAME_FoliageBrush, false))
+			if (AInstancedFoliageActor::FoliageTrace(World, Hit, FDesiredFoliageInstance(TraceStart, TraceEnd, nullptr), NAME_FoliageBrush, false))
 			{
 				UPrimitiveComponent* PrimComp = Hit.Component.Get();
 				if (PrimComp != nullptr)
@@ -470,7 +470,7 @@ void FRealTimePCGFoliageEdMode::ApplyBrush(FEditorViewportClient* ViewportClient
 {
 	SetPaintMaterial();
 	const FScopedTransaction Transaction(FText::FromString("Draw Mask"));
-	FVector4 DirtyRect = FVector4(BrushLocation.X - GetPaintingBrushRadius(), BrushLocation.Y - GetPaintingBrushRadius(), BrushLocation.X+GetPaintingBrushRadius(), BrushLocation.Y + GetPaintingBrushRadius());
+	FVector4f DirtyRect = FVector4f(BrushLocation.X - GetPaintingBrushRadius(), BrushLocation.Y - GetPaintingBrushRadius(), BrushLocation.X+GetPaintingBrushRadius(), BrushLocation.Y + GetPaintingBrushRadius());
 	PaintRTCache = RealTimePCGUtils::GetOrCreateTransientRenderTarget2D(PaintRTCache, "PaintRTCache", PCGFoliageManager->TextureSize, RTF_R8,FLinearColor::Black);	
 	double start, end;
 	start = FPlatformTime::Seconds();
@@ -523,7 +523,7 @@ void FRealTimePCGFoliageEdMode::ApplyBrush(FEditorViewportClient* ViewportClient
 	PCGFoliageManager->DebugRT = BiomePreviewRenderTarget;
 	PCGFoliageManager->DebugPaintMaterial = PaintMID;
 	PCGFoliageManager->Modify();
-	PCGFoliageManager->GenerateProceduralContent(true,FVector2D(BrushLocation.X, BrushLocation.Y), GetPaintingBrushRadius());
+	PCGFoliageManager->GenerateProceduralContent(true,FVector2f(BrushLocation.X, BrushLocation.Y), GetPaintingBrushRadius());
 	
 }
 
@@ -635,7 +635,7 @@ void FRealTimePCGFoliageEdMode::CopyRenderTargetToTexture(UTexture2D* InTexture,
 	InTexture->PostEditChange();
 }
 
-void FRealTimePCGFoliageEdMode::CleanProcedualFoliageInstance(UWorld* InWorld,FGuid Guid,const UFoliageType* FoliageType,FVector4 DirtyRect)
+void FRealTimePCGFoliageEdMode::CleanProcedualFoliageInstance(UWorld* InWorld,FGuid Guid,const UFoliageType* FoliageType,FVector4f DirtyRect)
 {
 
 	AInstancedFoliageActor* IFA = AInstancedFoliageActor::GetInstancedFoliageActorForLevel(InWorld->GetCurrentLevel());
@@ -660,7 +660,7 @@ void FRealTimePCGFoliageEdMode::CleanProcedualFoliageInstance(UWorld* InWorld,FG
 
 		if (InstancesToRemove.Num())
 		{
-			Info->RemoveInstances(IFA, InstancesToRemove, true);
+			Info->RemoveInstances(InstancesToRemove, true);
 		}
 	}
 }
@@ -698,7 +698,7 @@ void FRealTimePCGFoliageEdMode::SpawnFoliageInstance(UWorld* InWorld, const UFol
 	{
 		PointerArray.Add(&Instance);
 	}
-	FoliageInfo->AddInstances(IFA, FoliageType, PointerArray);
+	FoliageInfo->AddInstances(FoliageType, PointerArray);
 	if (FoliageInfo->GetComponent())
 		FoliageInfo->GetComponent()->BuildTreeIfOutdated(true, true);
 

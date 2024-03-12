@@ -18,7 +18,7 @@ public:
 		"RealTimePCGFoliageEdMode", // Context name for fast lookup
 		NSLOCTEXT("Contexts", "RealTimePCGFoliageEdMode", "Real Time ProcedualFoliage"), // Localized context name for displaying
 		NAME_None, // Parent
-		FEditorStyle::GetStyleSetName() // Icon Style Set
+		FAppStyle::GetAppStyleSetName() // Icon Style Set
 	)
 	{
 	}

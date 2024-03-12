@@ -8,7 +8,7 @@ struct FScatterPoint
     uint RandomID;
 };
 RWStructuredBuffer<uint> InstanceCountBuffer;
-float2 InputPattern[64];
+float InputPattern[128];
 float2 PatternSize;
 uint PatternPointNum;
 Texture2D<float> InputTexture;
@@ -57,7 +57,9 @@ void MainComputeShader(uint3 Gid : SV_GroupID, //atm: -, 0...256, - in rows (Y) 
     
     float2 rectSize = TotalRect.zw - TotalRect.xy;
     
-    float2 pos = (center * PatternSize + InputPattern[k]) * RadiusScale;
+    float2 pos；
+    pos[0] = (center * PatternSize[0] + InputPattern[k]) * RadiusScale;
+    pos[1] = (center * PatternSize[1] + InputPattern[k+1]) * RadiusScale;
     
     float2 uv = pos / rectSize;
     if (FlipY)
