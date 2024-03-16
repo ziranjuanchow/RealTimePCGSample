@@ -2,6 +2,7 @@
 #include "EngineModule.h"
 #include "GlobalShader.h"
 #include "ShaderParameterStruct.h"
+#include "DataDrivenShaderPlatformInfo.h"
 
 #define LOCTEXT_NAMESPACE "GraphicToolsPlugin"
 

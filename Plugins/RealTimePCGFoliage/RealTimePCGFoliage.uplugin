@@ -17,12 +17,12 @@
 		{
 			"Name": "RealTimePCGFoliage",
 			"Type": "Editor",
-			"LoadingPhase": "PostEngineInit"
+			"LoadingPhase": "Default"
 		},
 		{
 			"Name": "RealTimeScattering",
 			"Type": "Runtime",
-			"LoadingPhase": "PostConfigInit"
+			"LoadingPhase": "Default"
 		}
 	],	
    "Plugins": [                       
